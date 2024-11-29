@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Papelera
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <h1>Papelera</h1>
+</div>
+<br>
+<h3>Clientes</h3>
+<table class="table table-bordered table-striped">
+    <thead class="bg-success text-light">
+        <tr>
+            <th class="text-center">Nombre</th>
+            <th class="text-center">Cedula</th>
+            <th class="text-center">Telefono</th>
+            <th class="text-center">Fecha</th>
+            <th class="text-center">Formula Medica</th>
+            <th class="text-center">Valor</th>
+            <th class="text-center">Acciones</th>
+        </tr>
+    </thead>
+    <tbody class="text-center">
+        {% for client in clients %}
+                <tr>
+                    <td>{{ client.name }}</td>
+                    <td>{{ client.card }}</td>
+                    <td>{{ client.phone }}</td>
+                    <td>{{ client.date }}</td>
+                    <td>{{ client.medical_prescription }}</td>
+                    <td>{{ client.valor }}</td>
+                    <td>
+                        <!-- Botón para Restaurar solo con icono -->
+                        <button class="btn btn-warning" data-toggle="modal" data-target="#restoreClientModal{{ client.id }}" title="Restaurar">
+                            <i class="fas fa-undo-alt"></i>
+                        </button>
+                        
+                        <!-- Botón para Eliminar Permanentemente solo con icono -->
+                        <button class="btn btn-danger" data-toggle="modal" data-target="#deleteClientModal{{ client.id }}" title="Eliminar Permanentemente">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% include 'modals/restore_client.html' %}
+                {% include 'modals/delete_client.html' %}
+        {% endfor %}
+    </tbody>
+</table>
+<br>
+<h3>Proveedores</h3>
+<table class="table table-bordered table-striped">
+    <thead class="bg-success text-light">
+        <tr>
+            <th class="text-center">Nombre</th>
+            <th class="text-center">Producto</th>
+            <th class="text-center">Valor</th>
+            <th class="text-center">Acciones</th>
+        </tr>
+    </thead>
+    <tbody class="text-center">
+        {% for provider in providers %}
+                <tr>
+                    <td>{{ provider.name }}</td>
+                    <td>{{ provider.product }}</td>
+                    <td>{{ provider.valor }}</td>
+                    <td>
+                        <!-- Botón para Restaurar solo con icono -->
+                        <button class="btn btn-warning" data-toggle="modal" data-target="#restoreProviderModal{{ provider.id }}" title="Restaurar">
+                            <i class="fas fa-undo-alt"></i>
+                        </button>
+
+                        <!-- Botón para Eliminar Permanentemente solo con icono -->
+                        <button class="btn btn-danger" data-toggle="modal" data-target="#deleteProviderModal{{ provider.id }}" title="Eliminar Permanentemente">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% include 'modals/restore_provider.html' %}
+                {% include 'modals/delete_provider.html' %}
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

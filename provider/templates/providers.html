@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Proveedores
+{% endblock %}
+
+{% block content %}
+{% include 'modals/store_provider.html' %}
+<div class="row">
+    <h1 class="col-9">Proveedores</h1>
+    <button class="col-2 btn btn-primary" data-toggle="modal" data-target="#storeModal">Crear Proveedor</button>
+</div>
+<br>
+<table class="table table-bordered table-striped">
+    <thead class="bg-success text-light">
+        <tr>
+            <th class="text-center">Nombre</th>
+            <th class="text-center">Producto</th>
+            <th class="text-center">Valor</th>
+            <th class="text-center">Acciones</th>
+        </tr>
+    </thead>
+    <tbody class="text-center">
+        {% for provider in providers %}
+            <tr>
+                <td>{{ provider.name }}</td>
+                <td>{{ provider.product }}</td> <!-- Agregar columna Producto -->
+                <td>{{ provider.valor }}</td> <!-- Agregar columna Valor -->
+                <td>
+                    <!-- Botón para Editar -->
+                    <button class="btn btn-success" data-toggle="modal" data-target="#updateModal{{ provider.id }}" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <!-- Botón para Mover a la Papelera -->
+                     <button class="btn btn-warning" data-toggle="modal" data-target="#trashModal{{ provider.id }}" title="Mover a la Papelera">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </td>
+            </tr>
+            {% include 'modals/update_provider.html' %}
+            {% include 'modals/trash_provider.html' %}
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

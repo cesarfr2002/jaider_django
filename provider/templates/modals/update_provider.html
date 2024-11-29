@@ -1,0 +1,29 @@
+<div class="modal fade" id="updateModal{{ provider.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-light">
+          <h5 class="modal-title" id="exampleModalLabel">Actualizar Proveedor</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <form action="{% url 'update_provider' provider.id %}" method="POST">
+                {% csrf_token %}
+                <label for="name">Nombre:</label>
+                <input type="text" class="form-control" name="name" placeholder="Ingresa el nombre..." value="{{ provider.name }}" required>
+                
+                <label for="product">Producto:</label> <!-- Campo Producto -->
+                <input type="text" class="form-control" name="product" placeholder="Ingresa el producto..." value="{{ provider.product }}" required>
+                
+                <label for="valor">Valor:</label> <!-- Campo Valor -->
+                <input type="number" class="form-control" name="valor" placeholder="Ingresa el valor..." step="0.01" value="{{ provider.valor }}" required>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+          <button type="submit" class="btn btn-success">Actualizar</button>
+            </form>
+        </div>
+      </div>
+    </div>
+</div>

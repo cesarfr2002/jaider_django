@@ -1,0 +1,47 @@
+<div class="modal fade" id="updateModal{{ client.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <!-- Encabezado del modal -->
+        <div class="modal-header bg-success text-light">
+          <h5 class="modal-title" id="exampleModalLabel">Actualizar Cliente</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <!-- Cuerpo del modal -->
+        <div class="modal-body">
+          <form action="{% url 'update_client' client.id %}" method="POST">
+              {% csrf_token %}
+              <label for="name">Nombre:</label>
+              <input type="text" class="form-control" name="name" placeholder="Ingresa el nombre..." 
+                     value="{{ client.name }}" required>
+                     
+              <label for="card">Cédula:</label>
+              <input type="text" class="form-control" name="card" placeholder="Ingresa la cédula..." 
+                     pattern="\d{1,10}" maxlength="10" value="{{ client.card }}" required>
+                     
+              <label for="phone">Teléfono:</label>
+              <input type="text" class="form-control" name="phone" placeholder="Ingresa el teléfono..." 
+                     pattern="\d{1,10}" maxlength="10" value="{{ client.phone }}" required>
+                     
+              <label for="date">Fecha:</label>
+              <input type="date" class="form-control" name="date" value="{{ client.date }}" required>
+              
+              <label for="medical_prescription">Fórmula Médica:</label>
+              <input type="text" class="form-control" name="medical_prescription" 
+                     placeholder="Ingresa la fórmula médica..." 
+                     value="{{ client.medical_prescription }}" required>
+
+              <label for="valor">Valor:</label>
+              <input type="number" class="form-control" name="valor" placeholder="Ingresa el valor..." 
+                     step="0.01" value="{{ client.valor }}" required>
+        </div>
+        <!-- Pie del modal -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+          <button type="submit" class="btn btn-success">Actualizar</button>
+          </form>
+        </div>
+    </div>
+  </div>
+</div>

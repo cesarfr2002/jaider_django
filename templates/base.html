@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{% endblock %}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
+  <style>
+    body {
+        font-family: 'Inter', 'Montserrat', sans-serif;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 250px;
+        background: linear-gradient(135deg, #42a5d3, #2a628f);
+        padding-top: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        z-index: 1000;
+        overflow-x: hidden;
+        border-radius: 0 24px 24px 0;
+    }
+
+    .sidebar .text-center h3 {
+        color: #fff;
+        font-weight: bold;
+        letter-spacing: 1px;
+        margin-bottom: 20px;
+        display: inline-block;
+        font-size: 1.5rem;
+        margin: 15px 0;
+        padding: 10px 20px;
+        border-radius: 12px;
+        backdrop-filter: blur(5px);
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar ul {
+        list-style-type: none;
+        padding-left: 0;
+        flex-grow: 1;
+    }
+
+    .sidebar a {
+        color: #fff;
+        padding: 15px 25px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        font-size: 1em;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 12px;
+        margin: 5px 15px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(5px);
+        min-height: 55px;
+    }
+
+    .sidebar a i {
+        margin-right: 15px;
+        font-size: 1.4em;
+        width: 20px;
+        text-align: center;
+        min-width: 30px;
+    }
+
+    .sidebar a:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .sidebar .nav-item.active a {
+        background: rgba(255, 255, 255, 0.25);
+        font-weight: bold;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        border-left: 4px solid #ffffff;
+    }
+
+    .content-wrapper {
+        margin-left: 250px;
+        padding: 30px;
+        background-color: #f8f9fa;
+        min-height: 100vh;
+        transition: margin-left 0.3s ease;
+        border-radius: 24px 0 0 24px;
+        box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Scrollbar styling */
+    .sidebar::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 10px;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Estilo para las celdas del encabezado */
+    table.dataTable thead th {
+        background: linear-gradient(135deg, #42a5d3, #2a628f);
+        color: white;
+        font-weight: bold;
+        border-radius: 0px;
+        padding: 15px;
+        border: none;
+    }
+
+    /* Estilo del botón para abrir/cerrar la barra lateral */
+    .sidebar-toggle {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #2a628f;
+        border: none;
+        padding: 10px;
+        border-radius: 15px;
+        color: white;
+        font-size: 1.5em;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 5px auto;
+        backdrop-filter: blur(5px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar-toggle:hover {
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Ajustes para el botón Dark Mode */
+    .dark-mode-toggle {
+        position: absolute;
+        bottom: 85px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #2a628f;
+        border: none;
+        padding: 10px;
+        border-radius: 15px;
+        color: white;
+        font-size: 1.5em;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 5px auto;
+        backdrop-filter: blur(5px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .dark-mode-toggle:hover {
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Botón de salir mejorado */
+    .logout-toggle {
+        position: absolute;
+        bottom: 140px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #2a628f;
+        border: none;
+        border-radius: 15px;
+        color: white;
+        font-size: 1.2em;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        width: auto;
+        min-width: 45px;
+        height: 45px;
+        padding: 0 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 5px auto;
+        backdrop-filter: blur(5px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .logout-toggle:hover {
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .collapsed .sidebar {
+        width: 60px;
+    }
+
+    .collapsed .sidebar a span {
+        display: none;
+    }
+
+    .collapsed .sidebar .text-center h3 {
+        display: none;
+    }
+
+    .collapsed .content-wrapper {
+        margin-left: 60px;
+    }
+
+    .collapsed .sidebar-toggle,
+    .collapsed .dark-mode-toggle,
+    .collapsed .logout-toggle {
+        width: 35px;
+        height: 35px;
+        font-size: 1.2em;
+    }
+
+    /* Ajustes para cuando la barra está colapsada */
+    .collapsed .logout-toggle {
+        width: 40px;
+        padding: 0;
+        border-radius: 50%;
+    }
+
+    .collapsed .sidebar a {
+        justify-content: center;
+        padding: 15px 0;
+        min-height: 50px;
+    }
+
+    .collapsed .sidebar a i {
+        margin: 0;
+        font-size: 1.5em;
+    }
+
+    /* Dark Mode */
+    .dark-mode {
+        background: #121212;
+        color: #e0e0e0;
+    }
+
+    .dark-mode .sidebar {
+        background: linear-gradient(135deg, #2a4d64, #1a3040);
+    }
+
+    .dark-mode .sidebar a {
+        color: #e0e0e0;
+    }
+
+    .dark-mode .sidebar a:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .dark-mode .sidebar .nav-item.active a {
+        background-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .dark-mode .content-wrapper {
+        background: #1a1a1a;
+        color: #e0e0e0;
+        box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .dark-mode label,
+    .dark-mode .form-control-label {
+        color: #e0e0e0 !important;
+    }
+
+    .dark-mode .table {
+        color: #e0e0e0;
+    }
+
+    .dark-mode .modal-content {
+        background-color: #1e1e1e;
+        color: #e0e0e0;
+    }
+
+    .dark-mode .close {
+        color: #e0e0e0;
+    }
+
+    .dark-mode .form-control {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #e0e0e0;
+    }
+
+    .dark-mode .form-control:focus {
+        background-color: #363636;
+        color: #e0e0e0;
+    }
+
+    .dark-mode .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .dark-mode .dataTables_wrapper .dataTables_length,
+    .dark-mode .dataTables_wrapper .dataTables_filter,
+    .dark-mode .dataTables_wrapper .dataTables_info,
+    .dark-mode .dataTables_wrapper .dataTables_processing,
+    .dark-mode .dataTables_wrapper .dataTables_paginate {
+        color: #e0e0e0 !important;
+    }
+
+    .dark-mode .table.dataTable tbody tr {
+        background-color: #2d3748;
+    }
+
+    .dark-mode .table.dataTable tbody td {
+        color: #e0e0e0;
+    }
+
+    /* Estilos específicos para DataTables en modo oscuro */
+    .dark-mode .dataTables_wrapper label,
+    .dark-mode .dataTables_wrapper select,
+    .dark-mode .dataTables_wrapper input {
+        color: #e0e0e0 !important;
+    }
+
+    .dark-mode .dataTables_wrapper select {
+        background-color: #2d2d2d;
+        border-color: #404040;
+    }
+
+    .dark-mode .dataTables_wrapper select option {
+        background-color: #2d2d2d;
+        color: #e0e0e0;
+    }
+
+    .dark-mode .paginate_button {
+        color: #e0e0e0 !important;
+    }
+
+    .dark-mode .paginate_button.current {
+        background: #2a628f !important;
+        border-color: #2a628f !important;
+        color: #ffffff !important;
+    }
+
+    .dark-mode .paginate_button:hover {
+        background: #3a6d8f !important;
+        border-color: #3a6d8f !important;
+        color: #ffffff !important;
+    }
+
+    /* Estilos mejorados para DataTables en modo oscuro */
+    .dark-mode .dataTables_wrapper .dataTables_length,
+    .dark-mode .dataTables_wrapper .dataTables_filter,
+    .dark-mode .dataTables_wrapper .dataTables_info,
+    .dark-mode .dataTables_wrapper .dataTables_processing,
+    .dark-mode .dataTables_wrapper .dataTables_paginate,
+    .dark-mode .dataTables_wrapper label {
+        color: #e0e0e0 !important;
+    }
+
+    .dark-mode .dataTables_wrapper input[type="search"],
+    .dark-mode .dataTables_wrapper select {
+        background-color: #2d2d2d !important;
+        border: 1px solid #404040 !important;
+        color: #e0e0e0 !important;
+    }
+
+    .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button {
+        background: #2d2d2d !important;
+        color: #e0e0e0 !important;
+        border: 1px solid #404040 !important;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        margin: 0 4px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+    .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+        background: #2a628f !important;
+        color: #ffffff !important;
+        border-color: #2a628f !important;
+    }
+
+    .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background: #3a6d8f !important;
+        color: #ffffff !important;
+        border-color: #3a6d8f !important;
+    }
+
+    .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+        background: #1e1e1e !important;
+        color: #666666 !important;
+    }
+
+    .dark-mode .dataTables_wrapper input[type="search"]:focus {
+        outline: none;
+        border-color: #2a628f !important;
+        box-shadow: 0 0 0 2px rgba(42, 98, 143, 0.25) !important;
+    }
+
+    /* Estilos para los botones de paginación en modo claro */
+    .paginate_button {
+        padding: 0.5em 1em !important;
+        margin: 0 0.2em !important;
+        border: 1px solid #dee2e6 !important;
+        background-color: #fff !important;
+        color: #2a628f !important;
+        border-radius: 4px !important;
+        cursor: pointer !important;
+    }
+
+    .paginate_button:hover:not(.disabled) {
+        background-color: #e9ecef !important;
+        border-color: #dee2e6 !important;
+        color: #2a628f !important;
+    }
+
+    .paginate_button.current {
+        background-color: #2a628f !important;
+        border-color: #2a628f !important;
+        color: #fff !important;
+    }
+
+    .paginate_button.disabled {
+        color: #6c757d !important;
+        cursor: not-allowed !important;
+        background-color: #fff !important;
+        border-color: #dee2e6 !important;
+    }
+
+    /* Ajustar los estilos de paginación en modo oscuro */
+    .dark-mode .paginate_button {
+        background-color: #2d2d2d !important;
+        border-color: #404040 !important;
+        color: #e0e0e0 !important;
+    }
+
+    .dark-mode .paginate_button:hover:not(.disabled) {
+        background-color: #3a6d8f !important;
+        border-color: #2a628f !important;
+        color: #ffffff !important;
+    }
+
+    .dark-mode .paginate_button.disabled {
+        background-color: #1e1e1e !important;
+        border-color: #404040 !important;
+        color: #666666 !important;
+    }
+
+    /* Estilos específicos para los botones Previous/Next */
+    .dataTables_wrapper .dataTables_paginate .paginate_button.previous,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.next {
+        background-color: #2a628f !important;
+        color: #ffffff !important;
+        border: 1px solid #2a628f !important;
+        border-radius: 4px !important;
+        padding: 0.5em 1em !important;
+        margin: 0 0.2em !important;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button.previous:hover,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.next:hover {
+        background-color: #1d4f6b !important;
+        color: #ffffff !important;
+        border-color: #1d4f6b !important;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button.previous.disabled,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.next.disabled {
+        background-color: #6c757d !important;
+        color: #ffffff !important;
+        border-color: #6c757d !important;
+        cursor: not-allowed !important;
+        opacity: 0.65;
+    }
+
+    /* Ajustes para modo oscuro */
+    .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.previous.disabled,
+    .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.next.disabled {
+        background-color: #4a4a4a !important;
+        color: #ffffff !important;
+        border-color: #4a4a4a !important;
+    }
+
+    /* Estilos específicos para los botones Previous/Next */
+    .dataTables_wrapper .dataTables_paginate .paginate_button.previous,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.next {
+        background-color: #fff !important;
+        color: #2a628f !important;
+        border: 1px solid #dee2e6 !important;
+        border-radius: 4px !important;
+        padding: 0.5em 1em !important;
+        margin: 0 0.2em !important;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button.previous:hover,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.next:hover {
+        background-color: #e9ecef !important;
+        color: #2a628f !important;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button.previous.disabled,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.next.disabled {
+        background-color: #fff !important;
+        color: #6c757d !important;
+        border-color: #dee2e6 !important;
+        cursor: not-allowed !important;
+    }
+
+    /* Ajustes para modo oscuro */
+    .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.previous,
+    .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.next {
+        background-color: #2d2d2d !important;
+        color: #e0e0e0 !important;
+        border-color: #404040 !important;
+    }
+
+    .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.previous.disabled,
+    .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.next.disabled {
+        background-color: #1e1e1e !important;
+        color: #666666 !important;
+        border-color: #404040 !important;
+    }
+
+    /* Estilo para el botón de página actual */
+    .paginate_button.current,
+    .paginate_button.current:hover {
+        background-color: #ffffff !important;
+        border-color: #2a628f !important;
+        color: #2a628f !important;
+    }
+
+    /* También en modo oscuro mantener el mismo estilo */
+    .dark-mode .paginate_button.current,
+    .dark-mode .paginate_button.current:hover {
+        background-color: #ffffff !important;
+        border-color: #2a628f !important;
+        color: #2a628f !important;
+    }
+
+    /* Estilo para el botón de página actual */
+    .paginate_button.current,
+    .paginate_button.current:hover,
+    .dark-mode .paginate_button.current,
+    .dark-mode .paginate_button.current:hover {
+        background-color: #2a628f !important;
+        border-color: #2a628f !important;
+        color: #ffffff !important;
+    }
+
+    /* Ajuste adicional para asegurar que el hover no cambie el color */
+    .paginate_button.current:hover {
+        background-color: #1d4f6b !important;
+        color: #ffffff !important;
+    }
+
+    /* Sobrescribir estilos de jQuery DataTables para el botón actual */
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover,
+    .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+    .dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+        background: #ffffff !important;
+        color: #2a628f !important;
+        border-color: #2a628f !important;
+        box-shadow: none !important;
+        font-weight: bold !important;
+    }
+
+    /* Asegurar que el hover también mantenga el estilo */
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+        background: #ffffff !important;
+        color: #2a628f !important;
+    }
+
+    /* Nuevo diseño de tablas */
+    .table {
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+        margin-bottom: 1rem;
+        background-color: transparent;
+    }
+
+    /* Ajustes del encabezado */
+    .table thead th {
+        background: linear-gradient(135deg, #42a5d3, #2a628f);
+        color: white;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85em;
+        letter-spacing: 0.5px;
+        padding: 1rem;
+        border: none;
+        position: relative;
+    }
+
+    /* Ajuste para el primer y último th */
+    .table thead th:first-child {
+        border-top-left-radius: 15px;
+        border-bottom-left-radius: 15px;
+    }
+
+    .table thead th:last-child {
+        border-top-right-radius: 15px;
+        border-bottom-right-radius: 15px;
+    }
+
+    /* Ajustes para las celdas del cuerpo */
+    .table tbody tr {
+        background-color: #ffffff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s ease;
+        margin-bottom: 8px;
+    }
+
+    .table tbody td {
+        padding: 1rem;
+        border: none;
+        background-color: inherit;
+    }
+
+    /* Ajustes para modo oscuro */
+    .dark-mode .table thead th {
+        background: linear-gradient(135deg, #2a4d64, #1a3040);
+    }
+
+    .dark-mode .table tbody tr {
+        background-color: #2d2d2d;
+    }
+
+    /* Ajustes para el contenedor de DataTables */
+    .dataTables_wrapper {
+        padding: 1.5rem;
+        border-radius: 12px;
+        background: #f8f9fa;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+        margin-top: 1rem;
+    }
+
+    .dark-mode .dataTables_wrapper {
+        background: #1a202c;
+    }
+
+    .table thead th {
+        background: linear-gradient(135deg, #42a5d3, #2a628f);
+        color: white;
+        font-weight: bold;
+        border-radius: 0px;
+        padding: 15px;
+        border: none;
+    }
+
+    .table tbody tr {
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        border-radius: 0px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .table tbody tr:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .table tbody td {
+        background-color: #ffffff;
+        border: none;
+        padding: 15px 20px;
+        vertical-align: middle;
+    }
+
+    .table tbody tr td:first-child {
+        border-top-left-radius: 8px;
+        border-bottom-left-radius: 8px;
+    }
+
+    .table tbody tr td:last-child {
+        border-top-right-radius: 8px;
+        border-bottom-right-radius: 8px;
+    }
+
+    /* DataTables específicos */
+    .dataTables_wrapper {
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .dataTables_length select,
+    .dataTables_filter input {
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 8px 12px;
+        transition: all 0.3s ease;
+    }
+
+    .dataTables_length select:focus,
+    .dataTables_filter input:focus {
+        border-color: #42a5d3;
+        box-shadow: 0 0 0 2px rgba(66, 165, 211, 0.25);
+        outline: none;
+    }
+
+    .dataTables_paginate {
+        padding-top: 15px;
+    }
+
+    .dataTables_paginate .paginate_button {
+        padding: 8px 16px !important;
+        margin: 0 4px !important;
+        border-radius: 8px !important;
+        border: none !important;
+        background: #ffffff !important;
+        color: #2a628f !important;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    .dataTables_paginate .paginate_button:hover {
+        background: #e9ecef !important;
+        color: #2a628f !important;
+        transform: translateY(-1px);
+    }
+
+    .dataTables_paginate .paginate_button.current {
+        background: #2a628f !important;
+        color: #ffffff !important;
+        font-weight: 600;
+    }
+
+    /* Dark mode adjustments */
+    .dark-mode .table tbody td {
+        background-color: #2d3748;
+        color: #e0e0e0;
+    }
+
+    .dark-mode .table tbody tr {
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .dark-mode .dataTables_wrapper {
+        background: #1a202c;
+    }
+
+    .dark-mode .dataTables_length select,
+    .dark-mode .dataTables_filter input {
+        background-color: #2d2d2d;
+        border-color: #404040;
+        color: #e0e0e0;
+    }
+
+    .dark-mode .dataTables_paginate .paginate_button {
+        background: #2d3748 !important;
+        color: #e0e0e0 !important;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .dark-mode .dataTables_paginate .paginate_button:hover {
+        background: #4a5568 !important;
+    }
+
+    .dark-mode .dataTables_paginate .paginate_button.current {
+        background: #42a5d3 !important;
+        color: #ffffff !important;
+    }
+
+    /* Nueva paleta de colores y variables */
+    :root {
+        --primary: #3498db;
+        --primary-dark: #2980b9;
+        --secondary: #2c3e50;
+        --accent: #e74c3c;
+        --background: #f8f9fa;
+        --text: #2c3e50;
+        --success: #2ecc71;
+        --warning: #f1c40f;
+        --danger: #e74c3c;
+        --light: #ecf0f1;
+        --dark: #34495e;
+        --shadow: rgba(0, 0, 0, 0.1);
+        /* Modo claro */
+        --table-header-light: linear-gradient(135deg, #4facfe, #00f2fe);
+        --table-row-light: #ffffff;
+        --table-hover-light: #f8f9fa;
+        /* Modo oscuro */
+        --table-header-dark: linear-gradient(135deg, #2c5282, #1a365d);
+        --table-row-dark: #2d3748;
+        --table-hover-dark: #374151;
+    }
+
+    /* Ajustes de la barra lateral */
+    .sidebar {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+    }
+
+    /* Mejora de interacción de botones */
+    .sidebar a {
+        transition: all 0.2s ease;
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .sidebar a:hover {
+        transform: translateX(5px);
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Ajustes de la tabla y DataTables */
+    .table thead th {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        transition: none;
+    }
+
+    .table tbody tr {
+        transition: transform 0.15s ease;
+    }
+
+    .table tbody tr:hover {
+        transform: translateY(-1px);
+    }
+
+    /* Mejora de los botones de paginación */
+    .dataTables_paginate .paginate_button {
+        transition: all 0.2s ease !important;
+        position: relative;
+        z-index: 1;
+        margin: 0 2px !important;
+    }
+
+    .dataTables_paginate .paginate_button:hover {
+        transform: none !important;
+        background: var(--primary) !important;
+        color: white !important;
+        border-color: var(--primary) !important;
+    }
+
+    .dataTables_paginate .paginate_button.current {
+        background: var(--primary) !important;
+        border-color: var(--primary) !important;
+        color: white !important;
+        pointer-events: none;
+    }
+
+    /* Mejora de los botones de acción */
+    .sidebar-toggle,
+    .dark-mode-toggle,
+    .logout-toggle {
+        transition: all 0.2s ease;
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar-toggle:hover,
+    .dark-mode-toggle:hover,
+    .logout-toggle:hover {
+        transform: translateY(-2px);
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Dark Mode mejorado */
+    .dark-mode {
+        --background: #1a1a1a;
+        --text: #ffffff;
+        --shadow: rgba(0, 0, 0, 0.2);
+    }
+
+    .dark-mode .table thead th {
+        background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
+    }
+
+    .dark-mode .dataTables_wrapper {
+        background: #222;
+    }
+
+    .dark-mode .dataTables_paginate .paginate_button {
+        background: #2d2d2d !important;
+        border-color: #404040 !important;
+        color: #e0e0e0 !important;
+    }
+
+    .dark-mode .dataTables_paginate .paginate_button:hover {
+        background: var(--primary-dark) !important;
+        border-color: var(--primary-dark) !important;
+        color: white !important;
+    }
+
+    /* Mejoras en la accesibilidad */
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        min-width: 40px;
+        height: 40px;
+        line-height: 40px;
+        padding: 0 !important;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    /* Ajuste de espaciado y alineación */
+    .dataTables_wrapper .dataTables_filter {
+        margin-bottom: 1rem;
+    }
+
+    .dataTables_wrapper .dataTables_length select {
+        padding: 5px 30px 5px 10px;
+        cursor: pointer;
+    }
+
+    /* Mejoras en la barra lateral colapsada */
+    .collapsed .sidebar a {
+        justify-content: center;
+        padding: 15px 0;
+    }
+
+    .collapsed .sidebar a i {
+        margin: 0;
+        font-size: 1.4em;
+    }
+
+    /* Eliminar transformaciones agresivas */
+    .sidebar a:hover {
+        transform: none;
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Ajustes de las tablas según el modo */
+    .table thead th {
+        background: var(--table-header-light);
+        transition: background 0.3s ease;
+    }
+
+    .table tbody tr {
+        background-color: var(--table-row-light);
+        transition: background-color 0.3s ease;
+    }
+
+    .table tbody tr:hover {
+        transform: none;
+        background-color: var(--table-hover-light);
+    }
+
+    /* Modo oscuro para tablas */
+    .dark-mode .table thead th {
+        background: var(--table-header-dark);
+    }
+
+    .dark-mode .table tbody tr {
+        background-color: var(--table-row-dark);
+    }
+
+    .dark-mode .table tbody tr:hover {
+        background-color: var(--table-hover-dark);
+    }
+
+    /* Mejoras en los botones de paginación */
+    .dataTables_paginate .paginate_button {
+        transform: none !important;
+        transition: background-color 0.3s ease !important;
+    }
+
+    .dataTables_paginate .paginate_button:hover {
+        transform: none !important;
+    }
+
+    /* Ajustes en los botones de acción */
+    .sidebar-toggle:hover,
+    .dark-mode-toggle:hover,
+    .logout-toggle:hover {
+        transform: none;
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Mejora en la visualización de datos */
+    .table tbody td {
+        background-color: transparent !important;
+    }
+
+    /* Ajustes del DataTable wrapper */
+    .dataTables_wrapper {
+        background: transparent;
+        box-shadow: none;
+    }
+
+    /* Mejoras en los controles del DataTable */
+    .dataTables_length select,
+    .dataTables_filter input {
+        height: 38px;
+        line-height: 38px;
+        padding: 0 10px;
+    }
+
+    /* Asegurar que los botones sean fáciles de clickear */
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        min-width: 40px;
+        height: 40px;
+        line-height: 40px;
+        padding: 0 !important;
+        margin: 0 3px !important;
+        vertical-align: middle;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        user-select: none;
+    }
+
+    @media (max-width: 768px) {
+        .collapsed .sidebar a {
+            padding: 12px 0;
+        }
+
+        .collapsed .sidebar a i {
+            font-size: 1.2em;
+        }
+    }
+
+    /* Mejora de los botones de la barra lateral */
+    .sidebar-toggle,
+    .dark-mode-toggle,
+    .logout-toggle {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(255, 255, 255, 0.1);
+        border: none;
+        border-radius: 12px;
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(5px);
+    }
+
+    .sidebar-toggle {
+        bottom: 30px;
+        width: 40px;
+        height: 40px;
+    }
+
+    .dark-mode-toggle {
+        bottom: 85px;
+        width: 40px;
+        height: 40px;
+    }
+
+    .logout-toggle {
+        bottom: 140px;
+        width: auto;
+        min-width: 45px;
+        height: 45px;
+        padding: 0 15px;
+    }
+
+    /* Hover states sin transformaciones */
+    .sidebar-toggle:hover,
+    .dark-mode-toggle:hover,
+    .logout-toggle:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Ajustes para modo colapsado */
+    .collapsed .sidebar-toggle,
+    .collapsed .dark-mode-toggle,
+    .collapsed .logout-toggle {
+        width: 35px;
+        height: 35px;
+    }
+
+    .collapsed .logout-toggle {
+        width: 35px;
+        padding: 0;
+        border-radius: 50%;
+    }
+
+    /* Ajustes responsive */
+    @media (max-width: 768px) {
+        .sidebar-toggle,
+        .dark-mode-toggle,
+        .logout-toggle {
+            width: 35px;
+            height: 35px;
+        }
+
+        .logout-toggle {
+            width: 35px;
+            padding: 0;
+            border-radius: 50%;
+        }
+    }
+
+    /* Ajustes para transiciones más lentas */
+    .dataTables_paginate .paginate_button {
+        transition: all 0.5s ease-in-out !important; /* Transición más lenta */
+        transform: none !important;
+        position: relative;
+        z-index: 1;
+        margin: 0 4px !important;
+        min-width: 40px;
+        height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .dataTables_paginate .paginate_button:hover {
+        transition-duration: 0.8s !important; /* Hover aún más lento */
+        background-color: var(--primary) !important;
+        color: white !important;
+        transform: none !important;
+    }
+
+    /* Mejorar la interacción de botones de navegación */
+    .sidebar a {
+        transition: all 0.4s ease-in-out;
+    }
+
+    .sidebar a:hover {
+        transition-duration: 0.6s;
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Ajustar botones de acción */
+    .sidebar-toggle,
+    .dark-mode-toggle,
+    .logout-toggle {
+        transition: all 0.4s ease-in-out;
+    }
+
+    .sidebar-toggle:hover,
+    .dark-mode-toggle:hover,
+    .logout-toggle:hover {
+        transition-duration: 0.6s;
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Transiciones lentas para las filas de la tabla */
+    .table tbody tr {
+        transition: all 0.5s ease-in-out;
+    }
+
+    .table tbody tr:hover {
+        transition-duration: 0.8s;
+        background-color: var(--table-hover-light);
+    }
+
+    /* Modo oscuro */
+    .dark-mode .table tbody tr:hover {
+        background-color: var(--table-hover-dark);
+    }
+
+    /* Añade esto a tu sección de estilos */
+    .btn-primary {
+        background: linear-gradient(135deg, #42a5d3, #2a628f) !important;
+        border: none !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        border-radius: 8PX;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #3890bd, #245579) !important;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-primary:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Para modo oscuro */
+    .dark-mode .btn-primary {
+        background: linear-gradient(135deg, #2a4d64, #1a3040) !important;
+    }
+
+    .dark-mode .btn-primary:hover {
+        background: linear-gradient(135deg, #234257, #152736) !important;
+    }
+
+    /* Estilos mejorados para modales */
+    .modal-content {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+    }
+
+    .modal-header {
+        background: linear-gradient(135deg, #42a5d3, #2a628f);
+        color: white;
+        border-bottom: none;
+        border-radius: 20px 20px 0 0;
+        padding: 1.5rem;
+    }
+
+    .modal-title {
+        font-weight: 600;
+        font-size: 1.25rem;
+    }
+
+    .modal-body {
+        padding: 2rem;
+    }
+
+    .modal-footer {
+        border-top: none;
+        padding: 1.5rem;
+        background: #f8f9fa;
+        border-radius: 0 0 20px 20px;
+    }
+
+    /* Modo oscuro para modales */
+    .dark-mode .modal-content {
+        background: #2d3748;
+        color: #e0e0e0;
+    }
+
+    .dark-mode .modal-header {
+        background: linear-gradient(135deg, #2a4d64, #1a3040);
+        border-bottom: none;
+    }
+
+    .dark-mode .modal-footer {
+        background: #1a202c;
+        border-top: 1px solid #374151;
+    }
+
+    .dark-mode .modal-body {
+        background: #2d3748;
+    }
+
+    .dark-mode .close {
+        color: #ffffff;
+        text-shadow: none;
+        opacity: 0.8;
+    }
+
+    .dark-mode .close:hover {
+        color: #ffffff;
+        opacity: 1;
+    }
+
+    /* Mejoras en los inputs del modal */
+    .modal .form-control {
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+
+    .modal .form-control:focus {
+        border-color: #42a5d3;
+        box-shadow: 0 0 0 0.2rem rgba(66, 165, 211, 0.25);
+    }
+
+    .dark-mode .modal .form-control {
+        background: #1a202c;
+        border-color: #4a5568;
+        color: #e0e0e0;
+    }
+
+    .dark-mode .modal .form-control:focus {
+        border-color: #42a5d3;
+        box-shadow: 0 0 0 0.2rem rgba(66, 165, 211, 0.25);
+    }
+
+    /* Etiquetas del formulario */
+    .modal label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: #2d3748;
+    }
+
+    .dark-mode .modal label {
+        color: #e0e0e0;
+    }
+
+    /* Botones del modal */
+    .modal .btn {
+        padding: 0.5rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+  </style>
+
+</head>
+<body>
+  <div class="sidebar">
+    <div class="text-center">
+      <h3 class="text-white m-3">DeluxeVision</h3>
+    </div>
+    <ul class="nav flex-column">
+      <li class="nav-item {% if request.path == '/' %}active{% endif %}">
+        <a href="{% url 'list_clients' %}" class="nav-link">
+          <i class="fas fa-address-card"></i> <span>Clientes</span>
+        </a>
+      </li>
+      <li class="nav-item {% if request.path == '/proveedores/' %}active{% endif %}">
+        <a href="{% url 'list_providers' %}" class="nav-link">
+          <i class="fas fa-truck"></i> <span>Proveedores</span>
+        </a>
+      </li>
+      <li class="nav-item {% if request.path == '/papelera/' %}active{% endif %}">
+        <a href="{% url 'bin' %}" class="nav-link">
+          <i class="fas fa-trash-alt"></i> <span>Papelera</span>
+        </a>
+      </li>
+    </ul>
+    <!-- Botón para abrir/cerrar la barra lateral -->
+     <button class="sidebar-toggle" onclick="toggleSidebar()">
+      <i class="fas fa-bars"></i>
+     </button>
+     <button class="dark-mode-toggle" onclick="toggleDarkMode()">
+     <i class="fas fa-moon"></i>
+     </button>
+    <!-- Botón de Cerrar Sesión -->
+     <button class="logout-toggle" onclick="window.location.href='{% url 'login' %}'">
+     <i class="fas fa-sign-out-alt"></i>
+     <span class="logout-text" style="margin-left: 8px; display: inline-block;">Salir</span>
+     </button>
+
+
+  </div>
+  
+  <div class="content-wrapper">
+    {% block content %}
+    {% endblock %} 
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+  <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+  <script>
+    $(document).ready(function () {
+        // Inicializar DataTable
+        $('.table').DataTable({
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+            }
+        });
+
+        // Recuperar el estado del modo oscuro al cargar la página
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+        }
+    });
+
+    function toggleSidebar() {
+        const body = document.body;
+        body.classList.toggle('collapsed');
+        
+        // Manejar la visibilidad del texto del botón de logout
+        const logoutText = document.querySelector('.logout-text');
+        if (logoutText) {
+            logoutText.style.display = body.classList.contains('collapsed') ? 'none' : 'inline-block';
+        }
+        
+        // Si estamos en móvil, aseguramos que el contenido se ajuste
+        if (window.innerWidth <= 768) {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.style.width = body.classList.contains('collapsed') ? '0' : '250px';
+        }
+    }
+
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        // Guardar el estado del modo oscuro
+        localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+    }
+  </script>
+</body>
+</html>

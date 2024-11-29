@@ -1,0 +1,22 @@
+<div class="modal fade" id="restoreClientModal{{ client.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-warning text-light">
+          <h5 class="modal-title" id="exampleModalLabel">Restaurar Cliente</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <form action="{% url 'restore_client' client.id %}" method="POST">
+                {% csrf_token %}
+                <p>Se restaurara el cliente <strong>{{ client.name }}</strong>.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+          <button type="submit" class="btn btn-warning">Confirmar</button>
+            </form>
+        </div>
+      </div>
+    </div>
+  </div>
